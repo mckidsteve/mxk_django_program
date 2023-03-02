@@ -1,0 +1,10 @@
+- templates : 管理html
+- urls : 管理路由
+- views : 管理http
+- models : 管理数据库数据
+- static : 静态文件
+  - css : 
+  - js
+  - img
+  - audio
+- consumers : 管理websocket
