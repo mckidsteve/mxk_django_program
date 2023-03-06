@@ -8,3 +8,16 @@
   - img
   - audio
 - consumers : 管理websocket
+
+
+## *pr #1*:
+``web.html`` : 支持多端运行兼容
+
+1. load static:查找并载入静态文件夹
+2. import jquery(js & css) & static(js & css)
+
+``js update``:js render in client
+
+``views & urls update``:run in server
+
+``zzbase.js``:zip all js by scripts.sh
