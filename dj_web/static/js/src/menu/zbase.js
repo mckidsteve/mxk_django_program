@@ -38,6 +38,14 @@ class DjGameMenu{
         });
     }
 
+    hide(){
+        this.$menu.hide();
+    }
+
+    // show(){
+    //     this.$menu.show();
+    // }
+
     start(){
         this.add_listening_events();
     }

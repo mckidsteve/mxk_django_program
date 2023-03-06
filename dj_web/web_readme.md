@@ -21,3 +21,15 @@
 ``views & urls update``:run in server
 
 ``zzbase.js``:zip all js by scripts.sh
+
+
+## *pr # 2*
+
+- `css`: game.css -> the menu style
+- `img` : playground.png
+- `js`:
+  - `zbase.js` : menu and playground zbase.js , add the constructor and listener
+  - `scripts.sh`
+- `temp/web.html` : web.html
+- `urls`: index.py -> to link three page path
+- `views`: index.py -> to render the page
