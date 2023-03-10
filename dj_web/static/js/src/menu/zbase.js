@@ -12,11 +12,12 @@ class DjGameMenu{
 </div>
 </div>
 `);
+        // this.$menu.hide();
         this.root.$dj_game.append(this.$menu);
 
         this.$singlemode = this.$menu.find('.dj-game-menu-field-item-singlemode');
-        this.$multimode = this.$menu.find(`dj-game-menu-field-item-multimode`);
-        this.$settings = this.$menu.find('dj-game-menu-field-item-settings');
+        this.$multimode = this.$menu.find(`.dj-game-menu-field-item-multimode`);
+        this.$settings = this.$menu.find('.dj-game-menu-field-item-settings');
         this.start();
     }
 
@@ -26,7 +27,7 @@ class DjGameMenu{
             console.log('click single mode');
 
             outer.hide();
-            outer.root.playground = new DjGamePlayground(outer.root);
+            outer.root.playground.show();
         });
 
         this.$multimode.click(function () {
@@ -34,7 +35,7 @@ class DjGameMenu{
         });
 
         this.$settings.click(function () {
-            console.log('click settigns');
+            console.log('click settings');
         });
     }
 
@@ -42,9 +43,9 @@ class DjGameMenu{
         this.$menu.hide();
     }
 
-    // show(){
-    //     this.$menu.show();
-    // }
+    show(){
+        this.$menu.show();
+    }
 
     start(){
         this.add_listening_events();
