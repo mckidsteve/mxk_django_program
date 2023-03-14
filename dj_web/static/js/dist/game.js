@@ -58,7 +58,56 @@ let DJ_GAME_ANIMATION = function (timestamp){
 
 }
 
-requestAnimationFrame(DJ_GAME_ANIMATION);class DjGamePlayground{
+requestAnimationFrame(DJ_GAME_ANIMATION);class FireBall extends DjGameObject{
+    EPS = 0.1;
+    constructor(playground , player , x , y ,radius , color , damage , vx , vy , speed ,moved_dist) {
+        super(true);
+        this.playground = playground;
+        this.player = player ;
+        this.ctx = this.playground.game_map.ctx;
+
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+        this.damage = damage;
+
+        this.vx = vx;
+        this.vy = vy;
+        this.speed = speed;
+        this.moved_dist = moved_dist;
+
+    }
+
+    render(){
+        this.ctx.beginPath();
+        this.ctx.arc(this.x , this.y , this.radius , 0 , Math.PI*2 , false);
+        this.ctx.fillStyle = this.color ;
+        this.ctx.fill();
+    }
+
+    start(){
+
+    }
+
+    update(){
+        this.update_move();
+        this.render();
+    }
+
+    update_move(){
+        if(this.moved_dist < this.EPS){
+            this.destroy();
+            return false;
+        }
+
+        let moved = Math.min(this.moved_dist , this.speed * this.timedelta / 1000);
+        this.x += this.vx * moved;
+        this.y += this.vy * moved;
+        this.moved_dist -= moved;
+    }
+
+}class DjGamePlayground{
     constructor(root) {
         this.root = root;
 
@@ -141,6 +190,8 @@ class Player extends DjGameObject{
         this.vy = 0;
         this.move_length = 0;
 
+        this.cur_skill = null;
+
     }
 
     add_listening_events(){
@@ -155,9 +206,42 @@ class Player extends DjGameObject{
             if(ee === 3){
                 outer.move_to(e.clientX , e.clientY); // move to (x , y);
             }
-        })
+            else if (ee === 1){
+                if(outer.cur_skill === "fireball"){
+                    outer.shoot_fireball(e.clientX , e.clientY);
+                    return false;
+                }
+                outer.cur_skill = null;
+            }
+        });
+
+        $(window).keydown(function (e){
+            if(!outer.is_alive) return false;
+            let ee = e.which;
+            if(ee === 81) // Q key
+            {
+                outer.cur_skill = "fireball";
+                return false;
+            }
+        });
 
     }
+
+    shoot_fireball(tx , ty){
+        console.log(tx , ty);
+        let x = this.x , y = this.y;
+        let radius = this.playground.height * 0.01;
+        let color = "orange";
+        let damage = this.playground.height * 0.01;
+
+        let angle = Math.atan2(ty - this.y , tx - this.x);
+        let vx = Math.cos(angle) , vy = Math.sin(angle);
+        let speed = this.playground.height*0.5;
+        let moved_dist = this.playground.height*1;
+
+        new FireBall(this.playground , this , x , y , radius , color , damage , vx , vy , speed , moved_dist);
+    }
+
     move_to(tx , ty){
         console.log("move_to" , tx , ty);
         this.move_length = get_DIST(this.x , this.y , tx , ty);
