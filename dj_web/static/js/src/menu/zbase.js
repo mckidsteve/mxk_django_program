@@ -4,11 +4,11 @@ class DjGameMenu{
         this.$menu = $(`
 <div class = "dj-game-menu">
 <div class="dj-game-menu-field">
-<div class ="dj-game-menu-field-item-singlemode">单人模式</div>
+<div class ="dj-game-menu-field-item-singlemode">The solo work</div>
 <br><br>
-<div class="dj-game-menu-field-item-multimode">多人模式</div>
+<div class="dj-game-menu-field-item-multimode">The multi work</div>
 <br><br>
-<div class="dj-game-menu-field-item-settings">设置</div>
+<div class="dj-game-menu-field-item-settings">The settings</div>
 </div>
 </div>
 `);

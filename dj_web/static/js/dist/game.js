@@ -25,7 +25,7 @@ class DjGameObject{
 
         // 找到该对象并删除
         for(let i = 0;i < DJ_GAME_OBJECTS.length ;++ i){
-            if(DJ_GAME_OBJECTS[i] == this){
+            if(DJ_GAME_OBJECTS[i] === this){
                 DJ_GAME_OBJECTS.splice(i , 1);
                 break;
             }
@@ -51,9 +51,9 @@ let DJ_GAME_ANIMATION = function (timestamp){
             obj.timedelta = timestamp - last_timestamp;
             obj.update();
         }
-        last_timestamp = timestamp;
 
     }
+    last_timestamp = timestamp;
     requestAnimationFrame(DJ_GAME_ANIMATION);
 
 }
@@ -114,8 +114,15 @@ requestAnimationFrame(DJ_GAME_ANIMATION);class DjGamePlayground{
     update(){
 
     }
-}class Player extends DjGameObject{
+}
+let get_DIST = function (x1 , y1 ,x2,y2){
+    let dx = x1 - x2  , dy = y1 - y2;
+    return Math.sqrt(dx*dx + dy*dy);
+}
+
+class Player extends DjGameObject{
     EPS = 0.1;
+
     constructor(playground , x , y , radius, color , is_me , speed) {
         super(true);
 
@@ -130,9 +137,35 @@ requestAnimationFrame(DJ_GAME_ANIMATION);class DjGamePlayground{
         this.speed = speed;
         this.is_alive = true;
 
-        this.vx = 1;
-        this.vy = 1;
+        this.vx = 0;
+        this.vy = 0;
+        this.move_length = 0;
 
+    }
+
+    add_listening_events(){
+        let outer = this;
+        this.playground.game_map.$canvas.on("contextmenu" , function (){
+            return false; // close the right click listener;
+        });
+
+        this.playground.game_map.$canvas.mousedown(function (e){
+            if(!outer.is_alive) return false;
+            let ee = e.which;
+            if(ee === 3){
+                outer.move_to(e.clientX , e.clientY); // move to (x , y);
+            }
+        })
+
+    }
+    move_to(tx , ty){
+        console.log("move_to" , tx , ty);
+        this.move_length = get_DIST(this.x , this.y , tx , ty);
+
+        let angle = Math.atan2(ty - this.y , tx - this.x);
+
+        this.vx = Math.cos(angle);
+        this.vy = Math.sin(angle);
     }
 
     render() {
@@ -143,13 +176,29 @@ requestAnimationFrame(DJ_GAME_ANIMATION);class DjGamePlayground{
     }
 
     start(){
-
+        if(this.is_me) {
+            this.add_listening_events();
+        }
     }
 
     update(){
+        // console.log(this.x , this.y);
+        this.update_move();
         this.render();
-        this.x += this.vx;
-        this.y += this.vy;
+    }
+
+    update_move(){
+        if(this.move_length < this.EPS){
+            this.move_length = 0;
+            this.vx = this.vy = 0;
+        }
+        else {
+            let moved = Math.min(this.move_length , this.speed * this.timedelta / 1000);
+            // console.log(moved , this.move_length , this.speed , this.timedelta);
+            this.x += this.vx * moved;
+            this.y += this.vy * moved;
+            this.move_length -= moved;
+        }
     }
 
     on_destroy() {
@@ -162,7 +211,9 @@ requestAnimationFrame(DJ_GAME_ANIMATION);class DjGamePlayground{
         }
     }
 
-}class GameMap extends DjGameObject{
+}
+
+class GameMap extends DjGameObject{
     constructor(playground) {
         super();
 
@@ -173,13 +224,12 @@ requestAnimationFrame(DJ_GAME_ANIMATION);class DjGamePlayground{
         this.ctx.canvas.width = this.playground.width;
         this.ctx.canvas.height = this.playground.height;
 
-        console.log(this.ctx.canvas.height);
         this.playground.$playground.append(this.$canvas);
     }
 
 
     render(){
-        this.ctx.fillStyle = "rgba(0, 0 , 0, 1)";
+        this.ctx.fillStyle = "rgba(0, 0 , 0, 0.2)";
         this.ctx.fillRect(0 ,0 , this.ctx.canvas.width , this.ctx.canvas.height);
 
     }
@@ -198,11 +248,11 @@ requestAnimationFrame(DJ_GAME_ANIMATION);class DjGamePlayground{
         this.$menu = $(`
 <div class = "dj-game-menu">
 <div class="dj-game-menu-field">
-<div class ="dj-game-menu-field-item-singlemode">单人模式</div>
+<div class ="dj-game-menu-field-item-singlemode">The solo work</div>
 <br><br>
-<div class="dj-game-menu-field-item-multimode">多人模式</div>
+<div class="dj-game-menu-field-item-multimode">The multi work</div>
 <br><br>
-<div class="dj-game-menu-field-item-settings">设置</div>
+<div class="dj-game-menu-field-item-settings">The settings</div>
 </div>
 </div>
 `);

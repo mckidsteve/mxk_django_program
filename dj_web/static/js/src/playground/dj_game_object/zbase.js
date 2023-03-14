@@ -25,7 +25,7 @@ class DjGameObject{
 
         // 找到该对象并删除
         for(let i = 0;i < DJ_GAME_OBJECTS.length ;++ i){
-            if(DJ_GAME_OBJECTS[i] == this){
+            if(DJ_GAME_OBJECTS[i] === this){
                 DJ_GAME_OBJECTS.splice(i , 1);
                 break;
             }
@@ -51,9 +51,9 @@ let DJ_GAME_ANIMATION = function (timestamp){
             obj.timedelta = timestamp - last_timestamp;
             obj.update();
         }
-        last_timestamp = timestamp;
 
     }
+    last_timestamp = timestamp;
     requestAnimationFrame(DJ_GAME_ANIMATION);
 
 }
