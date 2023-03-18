@@ -31,6 +31,7 @@ class FireBall extends DjGameObject{
     }
 
     update(){
+        this.update_attack();
         this.update_move();
         this.render();
     }
@@ -47,4 +48,31 @@ class FireBall extends DjGameObject{
         this.moved_dist -= moved;
     }
 
+    is_satisfy_collision(obj){
+        if(this === obj) return false;
+        if(this.player === obj) return false;
+        return IS_COLLISION(this , obj);
+    }
+
+    attack(obj){
+        // console.log(angle , this.damage , obj.radius);
+        obj.is_attacked(this);
+
+        this.destroy();
+    }
+
+    update_attack(){
+        for(let i = 0 ; i < this.playground.players.length ; ++ i){
+            let obj = this.playground.players[i];
+            if(this.is_satisfy_collision(obj)){
+                this.attack(obj);
+                break;
+            }
+        }
+    }
+
+}
+
+let IS_COLLISION = function (obj1, obj2){
+    return get_DIST(obj1.x , obj1.y , obj2.x , obj2.y) < obj1.radius + obj2.radius; // 两圆相交
 }

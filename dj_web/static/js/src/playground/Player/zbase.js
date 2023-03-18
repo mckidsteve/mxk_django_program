@@ -63,7 +63,7 @@ class Player extends DjGameObject{
     }
 
     shoot_fireball(tx , ty){
-        console.log(tx , ty);
+        // console.log(tx , ty);
         let x = this.x , y = this.y;
         let radius = this.playground.height * 0.01;
         let color = "orange";
@@ -78,7 +78,7 @@ class Player extends DjGameObject{
     }
 
     move_to(tx , ty){
-        console.log("move_to" , tx , ty);
+        // console.log("move_to" , tx , ty);
         this.move_length = get_DIST(this.x , this.y , tx , ty);
 
         let angle = Math.atan2(ty - this.y , tx - this.x);
@@ -98,16 +98,54 @@ class Player extends DjGameObject{
         if(this.is_me) {
             this.add_listening_events();
         }
+        this.cold_time = 5;
     }
 
     update(){
         // console.log(this.x , this.y);
+        this.update_AI();
         this.update_move();
         this.render();
     }
 
-    update_move(){
+    update_AI(){
+        if(this.is_me) return false;
+
         if(this.move_length < this.EPS){
+            let tx = Math.random() * this.playground.width;
+            let ty = Math.random() * this.playground.height;
+
+            this.move_to(tx , ty);
+        }
+        if(!this.update_AI_cold_time()) return false;
+        this.update_AI_shoot_fireball();
+    }
+
+    update_AI_cold_time(){
+        if(this.cold_time > 0){
+            this.cold_time -= this.timedelta / 1000;
+            return false;
+        }
+        return true;
+    }
+
+    update_AI_shoot_fireball(){
+        if(Math.random() < 1 / 300.0){
+            let player = this.playground.players[0];
+            this.shoot_fireball(player.x , player.y);
+        }
+    }
+
+    update_move(){
+            // console.log(this.speed_damage);
+        if(this.speed_damage && this.speed_damage > this.EPS){
+            this.vx = this.vy = 0;
+            this.move_length = 0;
+            this.speed_damage *= this.friction_damage;
+            this.x += this.x_damage * this.speed_damage * this.timedelta / 1000 ;
+            this.y += this.y_damage * this.speed_damage * this.timedelta / 1000 ;
+        }
+        else if(this.move_length < this.EPS){
             this.move_length = 0;
             this.vx = this.vy = 0;
         }
@@ -129,6 +167,31 @@ class Player extends DjGameObject{
         }
         }
     }
+
+    is_attacked(fireball){
+        let angle = Math.atan2(this.y - fireball.y , this.x - fireball.x);
+        let damage = fireball.damage ;
+        this.is_attacked_concrete(angle , damage);
+    }
+    is_attacked_concrete(angle , damage){
+        this.radius -= damage;
+        this.friction_damage = 0.8;
+
+        if(this.is_died()) return false;
+
+        this.x_damage = Math.cos(angle);
+        this.y_damage = Math.sin(angle);
+        this.speed_damage = damage * 500;
+    }
+    is_died(){
+        if(this.radius < this.EPS * 10){
+            this.destroy();
+            return true;
+        }
+        return false;
+    }
+
+
 
 }
 
