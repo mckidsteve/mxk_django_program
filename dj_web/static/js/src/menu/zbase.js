@@ -1,5 +1,5 @@
 class DjGameMenu{
-    constructor(root) {
+    constructor(root ) {
         this.root = root;
         this.$menu = $(`
 <div class = "dj-game-menu">

@@ -1,4 +1,42 @@
-let DJ_GAME_OBJECTS = []; // 注册表
+class Settings{
+    constructor(root) {
+        this.root = root;
+        this.platform = "WEB";
+        this.start();
+    }
+
+    register(){}
+    login(){}
+    start(){
+        this.getinfo();
+    }
+    hide(){
+
+    }
+    show(){
+
+    }
+    getinfo(){
+        let outer = this;
+        $.ajax ({
+            url : "/settings/getinfo/",
+            type : "GET",
+            data:{
+                platform : outer.platform,
+            },
+            success : function (resp){
+                console.log(resp);
+                if(resp.result === "success"){
+                    outer.hide();
+                    outer.root.menu.show();
+                }
+                else{
+                    outer.login();
+                }
+            }
+        });
+    }
+}let DJ_GAME_OBJECTS = []; // 注册表
 
 class DjGameObject{
     constructor(hurtable = false) {
@@ -433,7 +471,7 @@ class GameMap extends DjGameObject{
     }
 
 }class DjGameMenu{
-    constructor(root) {
+    constructor(root ) {
         this.root = root;
         this.$menu = $(`
 <div class = "dj-game-menu">
@@ -485,10 +523,12 @@ class GameMap extends DjGameObject{
         this.add_listening_events();
     }
 }export class DjGame{
-    constructor(id) {
+    constructor(id,OS) {
         console.log("Create DJGAME");
         this.id = id;
+        this.OS = OS;
         this.$dj_game = $('#' + id);
+        this.settings = new Settings(this);
         this.menu = new DjGameMenu(this);
         this.playground = new DjGamePlayground(this);
 
